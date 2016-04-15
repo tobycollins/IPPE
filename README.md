@@ -31,6 +31,7 @@ The first demo: IPPE_demo1, shows how to use IPPE to solve a perspective camera'
 
 The second demo: IPPE_demo2, shows and example of using IPPE to solve a camera's pose with a plane and simulated point correspondences.
 
+## Dependencies
 This package requires the Affine SIFT (ASIFT) library for affine-invariant SIFT matching: http://www.ipol.im/pub/art/2011/my-asift/ This is easy to compile with c-make, and you should but the executable demo_ASIFT in the demo_ASIFT_src folder.
 
 Optionally, you may need Bouguet's calibration toolbox:  http://www.vision.caltech.edu/bouguetj/calib_doc/ This is used for performing lens undistortion on an image.
