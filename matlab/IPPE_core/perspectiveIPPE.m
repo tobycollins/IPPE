@@ -102,12 +102,14 @@ modelDims = size(U,1);
 Uuncentred = U;
 
 
-%zero-center model points:
+
 if modelDims==2
+   %we zero-center the model points:
     Pbar = [mean(U,2);0];
     U(1,:) = U(1,:)-Pbar(1);
     U(2,:) = U(2,:)-Pbar(2);
 else
+    %we rotate the model points onto the plane z=0 and zero center them:
     Pbar = mean(U,2);
     %U(1,:) = U(1,:)-Pbar(1);
     %U(2,:) = U(2,:)-Pbar(2);
