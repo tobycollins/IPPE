@@ -195,7 +195,7 @@ if measureTiming
     end
     
     tm = toc;
-    disp(['Approximate time to estimate homography: ' num2str(1000*tm/100) 'ms']);
+    disp(['Time to estimate homography: ' num2str(1000*tm/100) 'ms']);
     
     disp('Computing time to solve IPPE given homography...');
     tic;
@@ -217,7 +217,7 @@ if measureTiming
         t2 = [R2,t2_]*[-Pbar;1];    
     end
     tm = toc;
-    disp(['Approximate time to solve IPPE given homography: ' num2str(1000*tm/100) 'ms']);
+    disp(['Time to solve IPPE given homography: ' num2str(1000*tm/100) 'ms']);
 end
 
 
