@@ -8,7 +8,7 @@ function IPPE_demo1
 % methods such as SIFT and SURF, because they are not invariant to strong geometric image distortion.
 %
 % The images we demonstrate with are in
-% ./examples/planarTemplate1/undistortedViews. These contain some very
+% ../examples/planarTemplate1/undistortedViews. These contain some very
 % strong viewpoint angles, and SURF is not suitable for them.
 %
 % To solve this problem we require four things:
@@ -81,10 +81,10 @@ close all;
 % setup the planar template:
 templatImgPixelSize = 0.2;
 templateROI = [];
-planarTemplate = makePlanarTemplate(imread('./examples/planarTemplate1/templateImage.png'),templatImgPixelSize,templateROI);
+planarTemplate = makePlanarTemplate(imread('../examples/planarTemplate1/templateImage.png'),templatImgPixelSize,templateROI);
 
 % load a set of input images:
-inputDir = './examples/planarTemplate1/inputImages/';
+inputDir = '../examples/planarTemplate1/inputImages/';
 inputImages = dir([inputDir '*.JPG']);
 
 K = load([inputDir '/K.mat']); K = K.K;
