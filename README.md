@@ -1,5 +1,5 @@
 # IPPE
-Infinitesimal Plane-based Pose Estimation (IPPE): A very fast and accurate method to compute a camera's pose from a single image of a planar object using point correspondences. This has uses in several applications, including augmented reality, 3D tracking & pose estimation with planar markers, and 3D scene understanding.
+Infinitesimal Plane-based Pose Estimation (IPPE): A very fast and accurate way to compute a camera's pose from a single image of a planar object using point correspondences. This has uses in several applications, including augmented reality, 3D tracking & pose estimation with planar markers, and 3D scene understanding.
 
 This is the author's implementation from the peer reviewed paper "Infinitesimal Plane-based Pose Estimation" by Toby Collins and Adrien Bartoli, published in the International Journal of Computer Vision, September 2014. A copy of the author's pre-print version can be found here: http://isit.u-clermont1.fr/~ab/Publications/Collins_Bartoli_IJCV14.pdf
 
