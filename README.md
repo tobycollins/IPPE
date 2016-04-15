@@ -6,7 +6,7 @@ This is the author's implementation from the peer reviewed paper "Infinitesimal 
  Feel free to contact Toby (toby.collins@gmail.com) if you have any
  questions about the paper and IPPE.
 
- This package is free and covered by the BSD licence without any warranty. We hope you find this code useful and please cite our paper in your work:
+ This package is free and covered by the BSD licence without any warranty. We hope you find this code useful and if so please cite our paper in your work:
 
 @article{
 year={2014},
