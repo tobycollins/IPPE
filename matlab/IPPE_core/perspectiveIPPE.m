@@ -110,16 +110,15 @@ if modelDims==2
     U(2,:) = U(2,:)-Pbar(2);
 else
     %we rotate the model points onto the plane z=0 and zero center them:
-    Pbar = mean(U,2);
-    %U(1,:) = U(1,:)-Pbar(1);
-    %U(2,:) = U(2,:)-Pbar(2);
-    %U(3,:) = U(3,:)-Pbar(3);
-    [modelRotation,~,~] = svd(U*U'); modelRotation=modelRotation';
-    modelRotation(4,4) = 1;
+    Pbar = mean(U,2);   
     tCenter = eye(4);
-    tCenter(1:3,end) = -Pbar;
-    Mcorrective = modelRotation*tCenter;    
+    tCenter(1:3,end) = -Pbar;    
+    U_ = tCenter(1:3,:)*[U;ones(1,size(U,2))];  
+    [modelRotation,~,~] = svd(U_*U_'); modelRotation=modelRotation';
+    modelRotation(4,4) = 1;
+    Mcorrective = modelRotation*tCenter;
     U = Mcorrective(1:2,:)*[U;ones(1,size(U,2))];  
+    
 end
 
 
