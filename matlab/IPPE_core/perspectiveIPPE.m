@@ -111,12 +111,16 @@ if modelDims==2
 else
     %we rotate the model points onto the plane z=0 and zero center them:
     Pbar = mean(U,2);   
-    tCenter = eye(4);
-    tCenter(1:3,end) = -Pbar;    
-    U_ = tCenter(1:3,:)*[U;ones(1,size(U,2))];  
-    [modelRotation,~,~] = svd(U_*U_'); modelRotation=modelRotation';
+    MCenter = eye(4);
+    MCenter(1:3,end) = -Pbar;    
+    U_ = MCenter(1:3,:)*[U;ones(1,size(U,2))];  
+    [modelRotation,sigs,~] = svd(U_*U_'); modelRotation=modelRotation';
+    if (sigs(3,3)/sigs(2,2)>1e-5)
+        error('IPPE requires the model points to be planar!');
+    end
+    
     modelRotation(4,4) = 1;
-    Mcorrective = modelRotation*tCenter;
+    Mcorrective = modelRotation*MCenter;
     U = Mcorrective(1:2,:)*[U;ones(1,size(U,2))];  
     
 end
