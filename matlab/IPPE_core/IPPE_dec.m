@@ -48,7 +48,7 @@ if t<=eps
     %the plane is fronto-parallel to the camera, so set the corrective rotation Rv to identity. There will be only one solution to pose.
     Rv = eye(3)
 else
-    %the plane is not fronto-parallel to the camera, so set the corrective rotation Rv to identity
+    %the plane is not fronto-parallel to the camera, so set the corrective rotation Rv
     s = norm([v;1]);
     costh = 1/s;
     sinth = sqrt(1-1/(s^2));
