@@ -44,11 +44,17 @@ function [R1,R2,gamma] = IPPE_dec(v,J)
 
 %compute the correction rotation Rv:
 t = norm(v);
-s = norm([v;1]);
-costh = 1/s;
-sinth = sqrt(1-1/(s^2));
-Kcrs = 1/t*[zeros(2,2),v;-v',0];
-Rv = eye(3) + sinth*Kcrs + (1-costh)*Kcrs^2;
+if t<=eps
+    %the plane is fronto-parallel to the camera, so set the corrective rotation Rv to identity. There will be only one solution to pose.
+    Rv = eye(3)
+else
+    %the plane is not fronto-parallel to the camera, so set the corrective rotation Rv to identity
+    s = norm([v;1]);
+    costh = 1/s;
+    sinth = sqrt(1-1/(s^2));
+    Kcrs = 1/t*[zeros(2,2),v;-v',0];
+    Rv = eye(3) + sinth*Kcrs + (1-costh)*Kcrs^2;
+end
 
 %setup the 2x2 SVD decomposition:
 B = [eye(2),-v]*Rv(:,1:2);
