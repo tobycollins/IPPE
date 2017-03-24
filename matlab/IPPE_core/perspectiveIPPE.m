@@ -114,7 +114,11 @@ else
     MCenter = eye(4);
     MCenter(1:3,end) = -Pbar;    
     U_ = MCenter(1:3,:)*[U;ones(1,size(U,2))];  
+    %compute the rotation that rotates the model points onto the plane z=0: 
     [modelRotation,sigs,~] = svd(U_*U_'); modelRotation=modelRotation';
+    if det(modelRotation)<0
+        modelRotation(3,:)  = -modelRotation(3,:); %this ensures modelRotation is a member of SO3
+    end
     if (sigs(3,3)/sigs(2,2)>1e-5)
         error('IPPE requires the model points to be planar!');
     end
