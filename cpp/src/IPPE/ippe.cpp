@@ -128,19 +128,24 @@ void IPPE::PoseSolver::solveSquare(float squareLength, InputArray _imagePoints, 
     OutputArray _rvec1, OutputArray _tvec1, float& err1, OutputArray _rvec2, OutputArray _tvec2, float& err2)
 {
 
-    cv::Mat normalizedInputPoints; //undistored version of imagePoints
-    cv::Mat objectPoints2D;
-    generateSquareObjectCorners2D(squareLength, objectPoints2D);
-
-    //(Ra,ta), (Rb,tb) are the two pose solutions from IPPE.
+     //allocate outputs:
     _rvec1.create(3, 1, CV_64FC1);
     _tvec1.create(3, 1, CV_64FC1);
     _rvec2.create(3, 1, CV_64FC1);
     _tvec2.create(3, 1, CV_64FC1);
+    
+    cv::Mat normalizedInputPoints; //undistored version of imagePoints
+    cv::Mat objectPoints2D;
+    
+    //generate the object points:
+    generateSquareObjectCorners2D(squareLength, objectPoints2D);
 
-    cv::Mat H;
 
+    cv::Mat H; //homography from canonical object points to normalized pixels
+
+    
     if (_cameraMatrix.empty()) {
+        //this means imagePoints are defined in normalized pixel coordinates, so just copy it:
         _imagePoints.copyTo(normalizedInputPoints);
     }
     else {
@@ -148,14 +153,14 @@ void IPPE::PoseSolver::solveSquare(float squareLength, InputArray _imagePoints, 
         cv::undistortPoints(_imagePoints, normalizedInputPoints, _cameraMatrix, _distCoeffs);
     }
 
-    //compute the homography mapping the model's four corners to normalizedInputPoints
+    //compute H
     homographyFromSquarePoints(normalizedInputPoints, squareLength / 2.0f, H);
 
     //now solve
     cv::Mat Ma, Mb;
-
     solveCanonicalForm(objectPoints2D, normalizedInputPoints, H, Ma, Mb);
 
+    //sort poses according to reprojection error:
     cv::Mat M1, M2;
     cv::Mat objectPoints3D;
     generateSquareObjectCorners3D(squareLength, objectPoints3D);
@@ -210,9 +215,10 @@ double IPPE::PoseSolver::meanSceneDepth(InputArray _objectPoints, InputArray _rv
             z = static_cast<double>(q.at<float>(2));
         }
         zBar += z;
-        if (z <= 0) {
-            std::cout << "Warning: object point " << i << " projects behind the camera! This should not be allowed. " << std::endl;
-        }
+        
+        //if (z <= 0) {
+        //    std::cout << "Warning: object point " << i << " projects behind the camera! This should not be allowed. " << std::endl;
+        //}
     }
     return zBar / static_cast<double>(n);
 }
@@ -231,7 +237,7 @@ void IPPE::PoseSolver::rot2vec(InputArray _R, OutputArray _r)
     double trace = R.at<double>(0, 0) + R.at<double>(1, 1) + R.at<double>(2, 2);
     double w_norm = acos((trace - 1.0) / 2.0);
     double c0, c1, c2;
-    double eps = std::numeric_limits<double>::epsilon();
+    double eps = std::numeric_limits<float>::epsilon();
     double d = 1 / (2 * sin(w_norm)) * w_norm;
     if (w_norm < eps) //rotation is the identity
     {
@@ -411,6 +417,7 @@ void IPPE::PoseSolver::computeRotations(double j00, double j01, double j10, doub
     ata01 = a00 * a10 + a01 * a11;
     ata11 = a10 * a10 + a11 * a11;
 
+    //solve for gamma
     gamma = sqrt(0.5 * (ata00 + ata11 + sqrt((ata00 - ata11) * (ata00 - ata11) + 4.0 * ata01 * ata01)));
 
     //reconstruct the full rotation matrices:
@@ -427,11 +434,10 @@ void IPPE::PoseSolver::computeRotations(double j00, double j01, double j10, doub
     b0 = sqrt(-rtilde00_2 - rtilde10_2 + 1);
     b1 = sqrt(-rtilde01_2 - rtilde11_2 + 1);
     sp = (-rtilde00 * rtilde01 - rtilde10 * rtilde11);
-
     if (sp < 0) {
         b1 = -b1;
     }
-
+    
     //store results:
     Mat R1 = _R1.getMat();
     Mat R2 = _R2.getMat();
@@ -525,8 +531,7 @@ void IPPE::PoseSolver::makeCanonicalObjectPoints(InputArray _objectPoints, Outpu
 
     cv::Mat objectPoints = _objectPoints.getMat();
     cv::Mat canonicalObjPoints = _canonicalObjPoints.getMat();
-    //cv::Mat MmodelPoints2Canonical = _MmodelPoints2Canonical.getMat();
-
+  
     cv::Mat UZero(3, n, CV_64FC1);
     float epsf = std::numeric_limits<float>::epsilon();
 
