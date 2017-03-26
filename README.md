@@ -55,7 +55,7 @@ We show how to use IPPE with two demo executables (located in the build path's b
 ## Matlab implementation
 The function perspectiveIPPE.m is used to solve the problem. You can use addpath(genpath('./IPPE/matlab')) to setup necessary dependencies. To run all demos you need the Affine SIFT (ASIFT) library for affine-invariant SIFT matching: http://www.ipol.im/pub/art/2011/my-asift/ This is easy to compile with cmake, and you should put the executable demo_ASIFT in the demo_ASIFT_src folder.
 
-## Demos
+### Demos
 We give two demo functions for running IPPE.
 
 The first demo: IPPE_demo1, shows how to use IPPE to solve a perspective camera's pose with a plane and a single image using ransac-based feature matching. Two feature methods are supported, which are affine-sift (ASIFT) and SURF. Other can be easily added. This demo loops through a set of 5 images and computes the camera's pose relative to the plane for each image.
