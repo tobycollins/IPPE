@@ -6,7 +6,7 @@ IPPE has the significant benefit of being able to handle ambiguous cases. Specif
 
 The second pose is needed if the problem is ambiguous, which means there are two valid pose solutions. The problem is ambiguous when the projection of the object is close to affine, which in practice happens if it is small or viewed from a large distance. In these cases there are generally two pose solutions that can correctly align the correspondences (up to noise), so it is impossible to select the right pose using the reprojection error. IPPE gives you both the solutions, rather than just a single solution (which in ambiguous cases would be wrong 50% of the time). This problem is suffered by OpenCV's solvePnP default iterative solver because it only returns one solution. Geometrically, the two poses roughly correspond to a flip of the object about a plane whose normal passes through the line-of-sight from the camera centre to the object's centre. For more details about the ambiguity, please refer to the IPPE paper.
 
-We hope you find IPPE useful and if so please cite our paper in your work:
+We hope you find IPPE useful and if so please cite our paper:
 
 @article{
 year={2014},
@@ -34,7 +34,7 @@ There are two ways to use IPPE: (1) IPPE::PoseSolver::solveGeneric and (2) IPPE:
  pose solutions and their respective reprojection errors. These are sorted so that the first one is the one with the lowest reprojection error.
 
 ### solveSquare
- solveSquare is used to solve the pose of a square object defined by its 4 corners. It is mainly used for getting the pose of square targets such as AR markers (e.g. it can be used with aruco markers). In this special case, solveSquare is faster than solveGeneric because we compute the object-to-image homography with an analytic expression (discussed in the IPPE paper). This makes it exceptionally fast.
+ solveSquare is used to solve the pose of a square object defined by its 4 corners. It is mainly used for getting the pose of square targets such as AR markers (e.g. it can be used with aruco markers). In this special case, solveSquare is faster than solveGeneric because we compute the object-to-image homography with an analytic expression (discussed in the IPPE paper). This makes it exceptionally fast because pose is solved *completely* analytically.
  
 The plane's 4 corners are defined as follows in object coordinates:
 
