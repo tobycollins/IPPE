@@ -42,7 +42,8 @@ int main(int argc, char** argv)
     double l = 10;
 
     cv::Mat objectPoints, imagePoints;
-    IPPE::PoseSolver::generateSquareObjectCorners3D(l, objectPoints);
+    IPPE::PoseSolver planePoseSolver;
+    planePoseSolver.generateSquareObjectCorners3D(l, objectPoints);
 
     //setup camera matrix:
     Mat cameraMatrix(3, 3, CV_64FC1);
@@ -92,10 +93,10 @@ int main(int argc, char** argv)
         //The returned RMS errors will be different because for (1) it is computed in pixels and for (2) it is computed in normalized pixels:
         cv::Mat imagePointsud;
         cv::undistortPoints(imagePoints, imagePointsud, cameraMatrix, distCoeffs);
-        IPPE::PoseSolver::solveSquare(l, imagePointsud, cv::noArray(), cv::noArray(), rvec1, tvec1, err1, rvec2, tvec2, err2);
+        planePoseSolver.solveSquare(l, imagePointsud, cv::noArray(), cv::noArray(), rvec1, tvec1, err1, rvec2, tvec2, err2);
 
         //display results:
-        double zBar = IPPE::PoseSolver::meanSceneDepth(objectPoints, rvecGT, tvecGT);
+        double zBar = planePoseSolver.meanSceneDepth(objectPoints, rvecGT, tvecGT);
         std::cout << "Mean object depth: " << zBar << ", RMSE reprojection error of returned poses: (" << err1 << ", " << err2 << ")" << std::endl;
         itCount++;
         if (itCount == itLim) {
