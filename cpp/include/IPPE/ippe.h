@@ -6,6 +6,8 @@
 
 #include <limits>
 
+#define IPPE_SMALL 1e-7
+
 namespace IPPE {
 
 /**
@@ -71,7 +73,7 @@ public:
      * @param reprojErr2     Reprojection error of second solution
      */
     static void solveGeneric(cv::InputArray _objectPoints, cv::InputArray _imagePoints, cv::InputArray _cameraMatrix, cv::InputArray _distCoeffs,
-        cv::OutputArray _rvec1, cv::OutputArray _tvec1, float& reprojErr1, cv::OutputArray _rvec2, cv::OutputArray _tvec2, float& reprojErr2);
+                             cv::OutputArray _rvec1, cv::OutputArray _tvec1, float& reprojErr1, cv::OutputArray _rvec2, cv::OutputArray _tvec2, float& reprojErr2);
 
     /** @brief                Finds the two possible poses of a square planar object and their respective reprojection errors using IPPE. These poses are sorted so that the first one is the one with the lowest reprojection error.
      *
@@ -87,7 +89,7 @@ public:
      * @param reprojErr2         Reprojection error of second solution
      */
     static void solveSquare(float squareLength, cv::InputArray _imagePoints, cv::InputArray _cameraMatrix, cv::InputArray _distCoeffs,
-        cv::OutputArray _rvec1, cv::OutputArray _tvec1, float& reprojErr1, cv::OutputArray _rvec2, cv::OutputArray _tvec2, float& reprojErr2);
+                            cv::OutputArray _rvec1, cv::OutputArray _tvec1, float& reprojErr1, cv::OutputArray _rvec2, cv::OutputArray _tvec2, float& reprojErr2);
 
     /**
      * @brief                   Generates the 4 object points of a square planar object
@@ -131,7 +133,7 @@ private:
      * @param _Mb
      */
     static void solveCanonicalForm(cv::InputArray _canonicalObjPoints, cv::InputArray _normalizedInputPoints, cv::InputArray _H,
-        cv::OutputArray _Ma, cv::OutputArray _Mb);
+                                   cv::OutputArray _Ma, cv::OutputArray _Mb);
 
     /** @brief                        Computes the translation solution for a given rotation solution
      * @param _objectPoints              Array of corresponding object points, 1xN/Nx1 3-channel where N is the number of points
@@ -202,6 +204,32 @@ private:
      * @param err2                      RMS reprojection error of _M2
      */
     static void sortPosesByReprojError(cv::InputArray _objectPoints, cv::InputArray _imagePoints, cv::InputArray _cameraMatrix, cv::InputArray _distCoeffs, cv::InputArray _Ma, cv::InputArray _Mb, cv::OutputArray _M1, cv::OutputArray _M2, float& err1, float& err2);
+
+    /**
+     * @brief                           Finds the rotation _Ra that rotates a vector _a to the z axis (0,0,1)
+     * @param _a                        vector: 3x1 mat (double)
+     * @param _Ra                       Rotation: 3x3 mat (double)
+     */
+    static void rotateVec2ZAxis(cv::InputArray _a, cv::OutputArray _Ra);
+
+
+    /**
+     * @brief                           Computes the rotation _R that rotates the object points to the plane z=0. This uses the cross-product method with the first three object points.
+     * @param _objectPoints             Array of N>=3 coplanar object points defined in object coordinates. 1xN/Nx1 3-channel (float or double) where N is the number of points
+     * @param _R                        Rotation Mat: 3x3 (double)
+     * @return                          success (true) or failure (false)
+     */
+    static bool computeObjextSpaceR3Pts(cv::InputArray _objectPoints, cv::OutputArray _R);
+
+    /**
+     * @brief computeObjextSpaceRSvD    Computes the rotation _R that rotates the object points to the plane z=0. This uses the cross-product method with the first three object points.
+     * @param _objectPointsZeroMean     zero-meaned co=planar object points: 3xN matrix (double) where N>=3
+     * @param _R                        Rotation Mat: 3x3 (double)
+     * @return                          success (true) or failure (false)
+     */
+    static bool computeObjextSpaceRSvD(cv::InputArray _objectPointsZeroMean, cv::OutputArray _R);
+
+
 };
 }
 
