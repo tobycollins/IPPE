@@ -38,13 +38,13 @@ There are two ways to use IPPE: (1) IPPE::PoseSolver::solveGeneric and (2) IPPE:
  
 The plane's 4 corners are defined as follows in object coordinates:
 
-point 0: [-squareLength / 2.0, squareLength / 2.0, 0]
+point 0: [-squareLength / 2.0, squareLength / 2.0, 0.0]
 
-point 1: [squareLength / 2.0, squareLength / 2.0, 0]
+point 1: [squareLength / 2.0, squareLength / 2.0, 0.0]
 
-point 2: [squareLength / 2.0, -squareLength / 2.0, 0]
+point 2: [squareLength / 2.0, -squareLength / 2.0, 0.0]
 
-point 3: [-squareLength / 2.0, -squareLength / 2.0, 0]
+point 3: [-squareLength / 2.0, -squareLength / 2.0, 0.0]
 
  where squareLength denotes the length of the square. Therefore, the square is defined in object coordinates on the plane z=0 and centred at the origin.
  Just like solveGeneric, solveSquare also returns the two possible pose solutions and their respective reprojection errors.
