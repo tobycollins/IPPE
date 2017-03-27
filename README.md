@@ -53,7 +53,7 @@ point 3: [-squareLength / 2.0, -squareLength / 2.0, 0.0]
 We show how to use IPPE with two demo executables (located in the build path's bin subdirectory). The first: IPPE_demo_generic_pointset shows how to solve the general problem (4 or more point correspondences) using solveGeneric. The second: IPPE_demo_square_pointset shows how to solve the special problem with a square object using solveSquare. In both these demos we show how the problem can be ambiguous. Specifically, we increase the distance of the object to the camera, and show how the reprojection error of the second pose solution tends to zero as the depth tends to infinity.
 
 ## Matlab implementation
-The function perspectiveIPPE.m is used to solve the problem. You can use addpath(genpath('./IPPE/matlab')) to setup necessary dependencies. To run all demos you need the Affine SIFT (ASIFT) library for affine-invariant SIFT matching: http://www.ipol.im/pub/art/2011/my-asift/ This is easy to compile with cmake, and you should put the executable demo_ASIFT in the demo_ASIFT_src folder.
+The function perspectiveIPPE.m isolves the generic problem. You can use addpath(genpath('./IPPE/matlab')) to setup necessary dependencies. To run all demos you need the Affine SIFT (ASIFT) library for affine-invariant SIFT matching: http://www.ipol.im/pub/art/2011/my-asift/ This is easy to compile with cmake, and you should put the executable demo_ASIFT in the demo_ASIFT_src folder.
 
 ### Demos
 We give two demo functions for running IPPE.
