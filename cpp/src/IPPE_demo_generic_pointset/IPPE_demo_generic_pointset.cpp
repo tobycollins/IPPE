@@ -88,6 +88,8 @@ int main(int argc, char** argv)
 
     std::cout << std::endl
               << "Running the demo... " << std::endl;
+
+    IPPE::PoseSolver planePoseSolver;
     while (term == false) {
         //increase the z-component of translation:
         tvecGT.at<double>(2) = tvecGT.at<double>(2) * 1.2;
@@ -108,10 +110,10 @@ int main(int argc, char** argv)
         //The returned RMS errors will be different because (1) it is computed in pixels, whereas in (2) it is computed in normalized pixels:
         cv::Mat imagePointsud;
         cv::undistortPoints(imagePoints, imagePointsud, cameraMatrix, distCoeffs);
-        IPPE::PoseSolver::solveGeneric(objectPoints, imagePointsud, cv::noArray(), cv::noArray(), rvec1, tvec1, err1, rvec2, tvec2, err2);
+        planePoseSolver.solveGeneric(objectPoints, imagePointsud, cv::noArray(), cv::noArray(), rvec1, tvec1, err1, rvec2, tvec2, err2);
 
         //display results:
-        double zBar = IPPE::PoseSolver::meanSceneDepth(objectPoints, rvecGT, tvecGT);
+        double zBar = planePoseSolver.meanSceneDepth(objectPoints, rvecGT, tvecGT);
         std::cout << "Mean object depth: " << zBar << ", RMSE reprojection error of returned poses: (" << err1 << ", " << err2 << ")" << std::endl;
         itCount++;
         if (itCount == itLim) {
