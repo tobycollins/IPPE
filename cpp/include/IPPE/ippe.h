@@ -10,52 +10,6 @@
 
 namespace IPPE {
 
-/**
- * @brief This is the c++ implementation of plane-based pose estimation with Infinitesimal Plane-based Pose Estimation (IPPE).
- * We hope you find this useful and if so please cite our paper in your work:
- * @article{ year={2014}, issn={0920-5691}, journal={International Journal of Computer Vision}, volume={109}, number={3}, doi={10.1007/s11263-014-0725-5}, title={Infinitesimal Plane-Based Pose Estimation}, url={http://dx.doi.org/10.1007/s11263-014-0725-5}, publisher={Springer US}, keywords={Plane; Pose; SfM; PnP; Homography}, author={Collins, Toby and Bartoli, Adrien}, pages={252-286}, language={English} }
- *
- * Summary of IPPE:
- * IPPE is a very fast and accurate way to compute a plane's 3D pose from a single image using 4 or more point correspondences.
- * It works for perspective and affine cameras. It is used in several applications, including augmented reality, 3D tracking
- * and pose estimation with planar markers, and 3D scene understanding.
- *
- * Note that the returned poses are object-to-camera transforms, not camera-to-object transforms.
- *
- * There are two ways to use IPPE: (1) IPPE::PoseSolver::solveGeneric and (2) IPPE::PoseSolver::solveSquare.
- *
- * solveGeneric:
- * This has a very similar calling syntax to OpenCV's solvePnP, but with the important difference that IPPE returns *two*
- * pose solutions and their respective reprojection errors. Tese poses are sorted so that the first one is the one with the lowest reprojection error.
- * The second pose is needed if the problem is ambiguous, which means there are two valid pose solutions.
- * The problem is ambiguous when the projection of the object is close to affine, which in practice happens if it is small or viewed from a large distance.
- * In these cases there are two pose solutions that can correctly align the correspondences (up to noise), so it is impossible to select the right one from just the reprojection error.
- *
- * IPPE gives you both the solutions, rather than just a single solution (which in ambiguous cases would be wrong 50% of the time).
- * Geometrically, the two poses roughly correspond to a flip of the object about a plane whose normal passes through the line-of-sight from the camera centre to the object's centre.
- * For more details about these ambiguities, please refer to the IPPE paper.
- *
- * It is possible to reject the second pose if its reprojection error is significantly worse than the first pose. This can be done with a likelihood ratio test (https://en.wikipedia.org/wiki/Likelihood-ratio_test).
- *
- *
- * solveSquare:
- * solveSquare finds the two possible pose solutions for a square object defined by its 4 corners. and is typically used for getting the pose of AR markers such as aruco.
- * solveSquare is faster than solveGeneric because we compute the object-to-image homography with an analytic expression (discussed in the IPPE paper).
- *
- * The plane's 4 corners are defined as follows in object coordinates:
- * point 0: [-squareLength / 2.0, squareLength / 2.0, 0]
- * point 1: [squareLength / 2.0, squareLength / 2.0, 0]
- * point 2: [squareLength / 2.0, -squareLength / 2.0, 0]
- * point 3: [-squareLength / 2.0, -squareLength / 2.0, 0]
-
- * where squareLength denotes the length of the square. Therefore, the square is defined in object coordinates on the plane z=0 and centred at the origin.
- * Just like solveGeneric, solveSquare also returns the two possible pose solutions and their respective reprojection errors.
- *
- *
- * For licencing information please see the included file.
- * You can contact Toby (Toby.Collins@gmail.com) if you have any questions about the code, paper or IPPE.
- */
-
 class PoseSolver {
 
 public:
