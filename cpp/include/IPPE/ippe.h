@@ -6,7 +6,7 @@
 
 #include <limits>
 
-#define IPPE_SMALL 1e-7
+#define IPPE_SMALL 1e-7  //a small constant used to test 'small' values close to zero.
 
 namespace IPPE {
 
