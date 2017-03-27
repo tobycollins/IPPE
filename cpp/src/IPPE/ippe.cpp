@@ -6,7 +6,7 @@
 using namespace cv;
 
 void IPPE::PoseSolver::solveGeneric(cv::InputArray _objectPoints, cv::InputArray _imagePoints, cv::InputArray _cameraMatrix, cv::InputArray _distCoeffs,
-    cv::OutputArray _rvec1, cv::OutputArray _tvec1, float& err1, cv::OutputArray _rvec2, cv::OutputArray _tvec2, float& err2)
+                                    cv::OutputArray _rvec1, cv::OutputArray _tvec1, float& err1, cv::OutputArray _rvec2, cv::OutputArray _tvec2, float& err2)
 {
     cv::Mat normalizedImagePoints; //undistored version of imagePoints
 
@@ -38,7 +38,7 @@ void IPPE::PoseSolver::solveGeneric(cv::InputArray _objectPoints, cv::InputArray
 }
 
 void IPPE::PoseSolver::solveGeneric(cv::InputArray _objectPoints, cv::InputArray _normalizedInputPoints,
-    cv::OutputArray _Ma, cv::OutputArray _Mb)
+                                    cv::OutputArray _Ma, cv::OutputArray _Mb)
 {
 
     //argument checking:
@@ -84,7 +84,7 @@ void IPPE::PoseSolver::solveGeneric(cv::InputArray _objectPoints, cv::InputArray
 }
 
 void IPPE::PoseSolver::solveCanonicalForm(cv::InputArray _canonicalObjPoints, cv::InputArray _normalizedInputPoints, cv::InputArray _H,
-    cv::OutputArray _Ma, cv::OutputArray _Mb)
+                                          cv::OutputArray _Ma, cv::OutputArray _Mb)
 {
 
     _Ma.create(4, 4, CV_64FC1);
@@ -125,10 +125,10 @@ void IPPE::PoseSolver::solveCanonicalForm(cv::InputArray _canonicalObjPoints, cv
 }
 
 void IPPE::PoseSolver::solveSquare(float squareLength, InputArray _imagePoints, InputArray _cameraMatrix, InputArray _distCoeffs,
-    OutputArray _rvec1, OutputArray _tvec1, float& err1, OutputArray _rvec2, OutputArray _tvec2, float& err2)
+                                   OutputArray _rvec1, OutputArray _tvec1, float& err1, OutputArray _rvec2, OutputArray _tvec2, float& err2)
 {
 
-     //allocate outputs:
+    //allocate outputs:
     _rvec1.create(3, 1, CV_64FC1);
     _tvec1.create(3, 1, CV_64FC1);
     _rvec2.create(3, 1, CV_64FC1);
@@ -350,51 +350,37 @@ void IPPE::PoseSolver::computeRotations(double j00, double j01, double j10, doub
     _R2.create(3, 3, CV_64FC1);
 
     double a00, a01, a10, a11, ata00, ata01, ata11, b00, b01, b10, b11, binv00, binv01, binv10, binv11;
-    double rv00, rv01, rv02, rv10, rv11, rv12, rv20, rv21, rv22;
+    //double rv00, rv01, rv02, rv10, rv11, rv12, rv20, rv21, rv22;
     double rtilde00, rtilde01, rtilde10, rtilde11;
     double rtilde00_2, rtilde01_2, rtilde10_2, rtilde11_2;
     double b0, b1, gamma, dtinv;
-    double s, t, sp, krs0, krs1, krs0_2, krs1_2, costh, sinth;
+    double sp;
 
-    //compute the corrective rotation that aligns the camera's optical axis with the viewing ray (p,q,1)
-    t = sqrt(p * p + q * q);
-    if (t < std::numeric_limits<float>::epsilon()) { //the viewing ray is already aligned, so the corrective rotation is the identity:
-        rv00 = 1;
-        rv01 = 0;
-        rv02 = 0;
+    Mat Rv;
+    cv::Mat v(3,1,CV_64FC1);
+    v.at<double>(0) = p;
+    v.at<double>(1) = q;
+    v.at<double>(2) = 1;
+    rotateVec2ZAxis(v,Rv);
+    Rv = Rv.t();
 
-        rv10 = 0;
-        rv11 = 1;
-        rv12 = 0;
-
-        rv20 = 0;
-        rv21 = 0;
-        rv22 = 1;
-    }
-    else {
-        //compute the corrective rotation with Rodrigues formula:
-        s = sqrt(p * p + q * q + 1);
-
-        costh = 1 / s;
-        sinth = sqrt(1 - 1 / (s * s));
-
-        krs0 = p / t;
-        krs1 = q / t;
-        krs0_2 = krs0 * krs0;
-        krs1_2 = krs1 * krs1;
-
-        rv00 = (costh - 1) * krs0_2 + 1;
-        rv01 = krs0 * krs1 * (costh - 1);
-        rv02 = krs0 * sinth;
-        rv10 = krs0 * krs1 * (costh - 1);
-        rv11 = (costh - 1) * krs1_2 + 1;
-        rv12 = krs1 * sinth;
-        rv20 = -krs0 * sinth;
-        rv21 = -krs1 * sinth;
-        rv22 = (costh - 1) * (krs0_2 + krs1_2) + 1;
-    }
 
     //setup the 2x2 SVD decomposition:
+    double rv00, rv01, rv02;
+    double rv10, rv11, rv12;
+    double rv20, rv21, rv22;
+    rv00 = Rv.at<double>(0,0);
+    rv01 = Rv.at<double>(0,1);
+    rv02 = Rv.at<double>(0,2);
+
+    rv10 = Rv.at<double>(1,0);
+    rv11 = Rv.at<double>(1,1);
+    rv12 = Rv.at<double>(1,2);
+
+    rv20 = Rv.at<double>(2,0);
+    rv21 = Rv.at<double>(2,1);
+    rv22 = Rv.at<double>(2,2);
+
     b00 = rv00 - p * rv20;
     b01 = rv01 - p * rv21;
     b10 = rv10 - q * rv20;
@@ -417,7 +403,6 @@ void IPPE::PoseSolver::computeRotations(double j00, double j01, double j10, doub
     ata01 = a00 * a10 + a01 * a11;
     ata11 = a10 * a10 + a11 * a11;
 
-    //solve for gamma
     gamma = sqrt(0.5 * (ata00 + ata11 + sqrt((ata00 - ata11) * (ata00 - ata11) + 4.0 * ata01 * ata01)));
 
     //reconstruct the full rotation matrices:
@@ -434,10 +419,11 @@ void IPPE::PoseSolver::computeRotations(double j00, double j01, double j10, doub
     b0 = sqrt(-rtilde00_2 - rtilde10_2 + 1);
     b1 = sqrt(-rtilde01_2 - rtilde11_2 + 1);
     sp = (-rtilde00 * rtilde01 - rtilde10 * rtilde11);
+
     if (sp < 0) {
         b1 = -b1;
     }
-    
+
     //store results:
     Mat R1 = _R1.getMat();
     Mat R2 = _R2.getMat();
@@ -462,6 +448,7 @@ void IPPE::PoseSolver::computeRotations(double j00, double j01, double j10, doub
     R2.at<double>(2, 1) = (rtilde01)*rv20 + (rtilde11)*rv21 + (-b1) * rv22;
     R2.at<double>(2, 2) = (b0 * rtilde11 - b1 * rtilde10) * rv20 + (b1 * rtilde00 - b0 * rtilde01) * rv21 + (rtilde00 * rtilde11 - rtilde01 * rtilde10) * rv22;
 }
+
 
 void IPPE::PoseSolver::homographyFromSquarePoints(InputArray _targetPoints, double halfLength, OutputArray H_)
 {
@@ -531,9 +518,8 @@ void IPPE::PoseSolver::makeCanonicalObjectPoints(InputArray _objectPoints, Outpu
 
     cv::Mat objectPoints = _objectPoints.getMat();
     cv::Mat canonicalObjPoints = _canonicalObjPoints.getMat();
-  
+
     cv::Mat UZero(3, n, CV_64FC1);
-    float epsf = std::numeric_limits<float>::epsilon();
 
     double xBar = 0;
     double yBar = 0;
@@ -551,7 +537,7 @@ void IPPE::PoseSolver::makeCanonicalObjectPoints(InputArray _objectPoints, Outpu
             y = objectPoints.at<Vec3d>(i)[1];
             z = objectPoints.at<Vec3d>(i)[2];
 
-            if (abs(z) > epsf) {
+            if (abs(z) > IPPE_SMALL) {
                 isOnZPlane = false;
             }
         }
@@ -593,28 +579,21 @@ void IPPE::PoseSolver::makeCanonicalObjectPoints(InputArray _objectPoints, Outpu
         }
     }
     else {
-        //MmodelPoints2Canonical is given by MCenter followed by a rotation that aligns the points onto the plane z=0
-        cv::SVD s;
-        cv::Mat W, U, VT;
-        s.compute(UZero * UZero.t(), W, U, VT);
-        double s3 = W.at<double>(2);
-        double s2 = W.at<double>(1);
-
-        //check if points are coplanar:
-        assert(s3 / s2 < epsf); //should use limits
-
         cv::Mat UZeroAligned(3, n, CV_64FC1);
-        cv::Mat R = U.t();
-        if (cv::determinant(R) < 0) { //this ensures R is a rotation matrix and not a general unitary matrix:
-            R.at<double>(2, 0) = -R.at<double>(2, 0);
-            R.at<double>(2, 1) = -R.at<double>(2, 1);
-            R.at<double>(2, 2) = -R.at<double>(2, 2);
+        cv::Mat R; //rotation that rotates objectPoints to the plane z=0
+
+        if (!computeObjextSpaceR3Pts(objectPoints,R))
+        {
+            //we could not compute R, problably because there is a duplicate point in {objectPoints(0),objectPoints(1),objectPoints(2)}. So we compute it with the SVD (which is slower):
+            computeObjextSpaceRSvD(UZero,R);
         }
+
         UZeroAligned = R * UZero;
 
         for (size_t i = 0; i < n; i++) {
             canonicalObjPoints.at<Vec2d>(i)[0] = UZeroAligned.at<double>(0, i);
             canonicalObjPoints.at<Vec2d>(i)[1] = UZeroAligned.at<double>(1, i);
+            assert(abs(UZeroAligned.at<double>(2, i))<=IPPE_SMALL);
         }
 
         cv::Mat MRot(4, 4, CV_64FC1);
@@ -913,3 +892,139 @@ void HomographyHO::homographyHO(cv::InputArray _srcPoints, cv::InputArray _targP
     H = TB * H * TAi;
     H = H / H.at<double>(2, 2);
 }
+
+
+void IPPE::PoseSolver::rotateVec2ZAxis(InputArray _a, OutputArray _Ra)
+{
+    _Ra.create(3,3,CV_64FC1);
+    Mat Ra = _Ra.getMat();
+
+    double ax = _a.getMat().at<double>(0);
+    double ay = _a.getMat().at<double>(1);
+    double az = _a.getMat().at<double>(2);
+
+    double nrm = sqrt(ax*ax + ay*ay + az*az);
+    ax = ax/nrm;
+    ay = ay/nrm;
+    az = az/nrm;
+
+    double c = az;
+
+    if (abs(1.0+c)< std::numeric_limits<float>::epsilon())
+    {
+        Ra.setTo(0.0);
+        Ra.at<double>(0,0) = 1.0;
+        Ra.at<double>(1,1) = 1.0;
+        Ra.at<double>(2,2) = -1.0;
+    }
+    else
+    {
+        double d = 1.0/(1.0+c);
+        double ax2 = ax*ax;
+        double ay2 = ay*ay;
+        double axay = ax*ay;
+
+        Ra.at<double>(0,0) =  - ax2*d + 1.0;
+        Ra.at<double>(0,1) =  -axay*d;
+        Ra.at<double>(0,2) =  -ax;
+
+        Ra.at<double>(1,0) =  -axay*d;
+        Ra.at<double>(1,1) =  - ay2*d + 1.0;
+        Ra.at<double>(1,2) = -ay;
+
+        Ra.at<double>(2,0) = ax;
+        Ra.at<double>(2,1) = ay;
+        Ra.at<double>(2,2) = 1.0 - (ax2 + ay2)*d;
+    }
+
+
+}
+
+bool IPPE::PoseSolver::computeObjextSpaceR3Pts(InputArray _objectPoints, OutputArray R)
+{
+    bool ret; //return argument
+    double p1x,p1y,p1z;
+    double p2x,p2y,p2z;
+    double p3x,p3y,p3z;
+
+    cv::Mat objectPoints = _objectPoints.getMat();
+    size_t n = objectPoints.rows*objectPoints.cols;
+    if (objectPoints.type() == CV_32FC3)
+    {
+        p1x = objectPoints.at<Vec3f>(0)[0];
+        p1y = objectPoints.at<Vec3f>(0)[1];
+        p1z = objectPoints.at<Vec3f>(0)[2];
+
+        p2x = objectPoints.at<Vec3f>(1)[0];
+        p2y = objectPoints.at<Vec3f>(1)[1];
+        p2z = objectPoints.at<Vec3f>(1)[2];
+
+        p3x = objectPoints.at<Vec3f>(2)[0];
+        p3y = objectPoints.at<Vec3f>(2)[1];
+        p3z = objectPoints.at<Vec3f>(2)[2];
+    }
+    else
+    {
+        p1x = objectPoints.at<Vec3d>(0)[0];
+        p1y = objectPoints.at<Vec3d>(0)[1];
+        p1z = objectPoints.at<Vec3d>(0)[2];
+
+        p2x = objectPoints.at<Vec3d>(1)[0];
+        p2y = objectPoints.at<Vec3d>(1)[1];
+        p2z = objectPoints.at<Vec3d>(1)[2];
+
+        p3x = objectPoints.at<Vec3d>(2)[0];
+        p3y = objectPoints.at<Vec3d>(2)[1];
+        p3z = objectPoints.at<Vec3d>(2)[2];
+    }
+
+    double nx = (p1y - p2y)*(p1z - p3z) - (p1y - p3y)*(p1z - p2z);
+    double ny  = (p1x - p3x)*(p1z - p2z) - (p1x - p2x)*(p1z - p3z);
+    double nz = (p1x - p2x)*(p1y - p3y) - (p1x - p3x)*(p1y - p2y);
+
+    double nrm = sqrt(nx*nx+ ny*ny + nz*nz);
+    if (nrm>IPPE_SMALL)
+    {
+        nx = nx/nrm;
+        ny = ny/nrm;
+        nz = nz/nrm;
+        cv::Mat v(3,1,CV_64FC1);
+        v.at<double>(0) = nx;
+        v.at<double>(1) = ny;
+        v.at<double>(2) = nz;
+        rotateVec2ZAxis(v,R);
+        ret = true;
+    }
+    else
+    {
+        ret = false;
+    }
+    return ret;
+}
+
+bool IPPE::PoseSolver::computeObjextSpaceRSvD(InputArray _objectPointsZeroMean, OutputArray _R)
+{
+    bool ret; //return argument
+    _R.create(3,3,CV_64FC1);
+    cv::Mat R = _R.getMat();
+
+    //we could not compute R with the first three points, so lets use the SVD
+    cv::SVD s;
+    cv::Mat W, U, VT;
+    s.compute(_objectPointsZeroMean.getMat() * _objectPointsZeroMean.getMat().t(), W, U, VT);
+    double s3 = W.at<double>(2);
+    double s2 = W.at<double>(1);
+
+    //check if points are coplanar:
+    assert(s3 / s2 < IPPE_SMALL);
+
+    R = U.t();
+    if (cv::determinant(R) < 0) { //this ensures R is a rotation matrix and not a general unitary matrix:
+        R.at<double>(2, 0) = -R.at<double>(2, 0);
+        R.at<double>(2, 1) = -R.at<double>(2, 1);
+        R.at<double>(2, 2) = -R.at<double>(2, 2);
+    }
+    ret = true;
+    return ret;
+}
+
