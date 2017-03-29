@@ -34,7 +34,7 @@ There are two ways to use IPPE: (1) IPPE::PoseSolver::solveGeneric and (2) IPPE:
  pose solutions and their respective reprojection errors. These are sorted so that the first one is the one with the lowest reprojection error.
 
 ### solveSquare
- solveSquare is used to solve the pose of a square object defined by its 4 corners. It is mainly used for getting the pose of square targets such as AR markers (e.g. it can be used with aruco markers). In this special case, solveSquare is faster than solveGeneric because we compute the object-to-image homography with an analytic expression (discussed in the IPPE paper). This makes it exceptionally fast because pose is solved *completely* analytically.
+ solveSquare is used to solve the pose of a square object defined by its 4 corners. It is mainly used for getting the pose of square targets such as AR markers (e.g. it can be used with aruco markers). In this special case, solveSquare is faster than solveGeneric because we compute the object-to-image homography with an analytic expression (discussed in the IPPE paper). This makes it exceptionally fast because pose is solved *completely* analytically. It is approximately 50 to 80 times faster than OpenCV's default PnP solver.
  
 The plane's 4 corners are defined as follows in object coordinates:
 
