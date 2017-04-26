@@ -70,11 +70,19 @@ void IPPE::PoseSolver::solveGeneric(cv::InputArray _objectPoints, cv::InputArray
         normalizedInputPoints = _normalizedInputPoints.getMat();
     }
 
+    cv::Mat objectInputPoints;
+    if (type_input == CV_32FC3) {
+        _objectPoints.getMat().convertTo(objectInputPoints, CV_64FC3);
+    }
+    else {
+        objectInputPoints = _objectPoints.getMat();
+    }
+
     cv::Mat canonicalObjPoints;
     cv::Mat MmodelPoints2Canonical;
 
     //transform object points to the canonical position (zero centred and on the plane z=0):
-    makeCanonicalObjectPoints(_objectPoints, canonicalObjPoints, MmodelPoints2Canonical);
+    makeCanonicalObjectPoints(objectInputPoints, canonicalObjPoints, MmodelPoints2Canonical);
 
     //compute the homography mapping the model's points to normalizedInputPoints
     cv::Mat H;
