@@ -652,11 +652,11 @@ void IPPE::PoseSolver::evalReprojError(cv::InputArray _objectPoints, cv::InputAr
     for (size_t i = 0; i < n; i++) {
         if (projectedPoints.depth() == CV_32FC1) {
             dx = projectedPoints.at<Vec2f>(i)[0] - imagePoints.at<Vec2f>(i)[0];
-            dy = projectedPoints.at<Vec2f>(i)[0] - imagePoints.at<Vec2f>(i)[0];
+            dy = projectedPoints.at<Vec2f>(i)[1] - imagePoints.at<Vec2f>(i)[1];
         }
         else {
             dx = projectedPoints.at<Vec2d>(i)[0] - imagePoints.at<Vec2d>(i)[0];
-            dy = projectedPoints.at<Vec2d>(i)[0] - imagePoints.at<Vec2d>(i)[0];
+            dy = projectedPoints.at<Vec2d>(i)[1] - imagePoints.at<Vec2d>(i)[1];
         }
 
         err += dx * dx + dy * dy;
