@@ -13,3 +13,10 @@ add_library( IPPE
     ippe.cpp
 )
 target_link_libraries( IPPE ${OpenCV_LIBS} )
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include)
+install(TARGETS IPPE
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)

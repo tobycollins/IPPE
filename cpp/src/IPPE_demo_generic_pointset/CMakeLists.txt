@@ -8,3 +8,7 @@ add_executable( IPPE_demo_generic_pointset
     IPPE_demo_generic_pointset.cpp
 )
 target_link_libraries( IPPE_demo_generic_pointset IPPE)
+
+install(TARGETS IPPE_demo_generic_pointset
+    RUNTIME DESTINATION bin
+)
