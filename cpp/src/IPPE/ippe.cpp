@@ -71,7 +71,7 @@ void IPPE::PoseSolver::solveGeneric(cv::InputArray _objectPoints, cv::InputArray
     }
 
     cv::Mat objectInputPoints;
-    if (type_input == CV_32FC3) {
+    if (objType == CV_32FC3) {
         _objectPoints.getMat().convertTo(objectInputPoints, CV_64FC3);
     }
     else {
