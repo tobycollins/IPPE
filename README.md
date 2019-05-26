@@ -59,3 +59,22 @@ We give two demo functions for running IPPE.
 The first demo: IPPE_demo1, shows how to use IPPE to solve a perspective camera's pose with a plane and a single image using ransac-based feature matching. Two feature methods are supported, which are affine-sift (ASIFT) and SURF. Other can be easily added. This demo loops through a set of 5 images and computes the camera's pose relative to the plane for each image.
 
 The second demo: IPPE_demo2, shows an example of using IPPE to solve a camera's pose with a plane and simulated point correspondences.
+
+
+
+## Resolving the flip ambiguity
+So how to resolve the ambiguity? You can't do it using pnp, and indeed no pnp algorithm will be able to resolve it, because it is a property of the problem. More information is required to constrain the marker's pose.
+
+There are four main options:
+
+1. To use the effect of shading to determine the correct pose. Basically, the brightness of the marker is influenced by its orientation relative to the scene's illumination. It is possible to determine the correct pose using this information. This is nicely shown in the optical illusion posted above by @catree. However this can be difficult in practice because it requires determining the illumination of the scene.
+
+2. To use temporal filtering, as suggested by @catree. But in practice this is very hard to use, and it cannot solve the problem reliably. It might reduce random flipping between the two solutions, but we cannot guarantee that the smoothed trajectory of poses is correct.
+
+3. To use additional non-coplanar markers.
+If you have one or more additional markers that are not co-planar to the original marker, then you can resolve the ambiguity. This is because the pnp problem no longer involves a planar model, and we can compute pose uniquely.
+
+4. To use additional coplanar markers.
+If you have a set of markers that all lie on the same plane, then is it possible to resolve the ambiguity, but there is a condition. The set of markers must span a region of space that is 'sufficiently large'. You need this condition to prevent an ambiguity of the entire set of markers being flipped. There are two ways to solve this in practice. The first is to solve the pose of each marker independently and then find the correct pose using a consensus. The correct pose should be revealed as a tight cluster within the set of all poses (2 poses per marker). If you don't know the relative positions of the markers on the plane, you can do a consensus with the estimated normals of each marker (with two normals per marker). Alternatively if you know the relative positions of the markers on the plane, things are simpler. You can simply detect all the markers in the image, then solve a single pnp problem with 4n point correspondences, where n is the number of detected markers.
+
+
