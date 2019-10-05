@@ -1,3 +1,5 @@
+Note: IPPE is now integrated and maintained in OpenCV. This repository may be discontinued.
+
 # IPPE
 ## Overview
 This is the C++ and Matlab implementations of Infinitesimal Plane-based Pose Estimation (IPPE): A very fast way to compute a planar object's 3D pose from a single image from 4 or more point correspondences. It works for perspective, weak-perspective and para-perspective cameras and is used in several applications, including Augmented Reality (AR), 3D tracking and pose estimation with planar markers, and 3D scene understanding. It is highly accurate for models that have points distributed in a regular way, such as square models used in Augmented Reality (AR) markers. For other models, the most accurate results are generally found by using an iterative solver such as Levenberg Marquardt. IPPE can be used as a very fast way to initialize these iterative solvers.   
